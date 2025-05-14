@@ -1,0 +1,28 @@
+services:
+  pgsql:
+    image: "postgres:latest"
+    container_name: "yim-go.pgsql"
+    ports:
+      - "${POSTGRES_FORWARD_PORT:-5432}:5432"
+    environment:
+      PGPASSWORD: "${POSTGRES_PASSWORD:-password}"
+      POSTGRES_DB: "${POSTGRES_DB:-postgres}"
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgres}"
+    volumes:
+      - 'pgsql-data:/var/lib/postgresql/data'
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - "-q"
+        - "-d"
+        - "${POSTGRES_DB:-postgres}"
+        - "-U"
+        - "${POSTGRES_USER:-postgres}"
+      retries: 3
+      timeout: 5s
+
+volumes:
+  pgsql-data:
+    driver: local
